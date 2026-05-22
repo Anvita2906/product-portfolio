@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lune — Anvita's Universe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=journey-open-43">
+  <style>
+    :root {
+      --ab-bg: #120c0f;
+    }
+    html, body { background: var(--ab-bg); min-height: 100%; }
+    body { margin: 0; overflow-x: hidden; overflow-y: auto; }
+    canvas {
+      display: block;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: none !important;
+      background-color: transparent !important;
+    }
+    .ab-root {
+      position: relative;
+      width: 100%;
+      min-height: 1900px;
+      overflow: visible;
+      background:
+        radial-gradient(960px 640px at 18% 4%, rgba(232,168,124,0.06), transparent 60%),
+        radial-gradient(900px 680px at 82% 22%, rgba(122,59,74,0.09), transparent 64%),
+        radial-gradient(780px 760px at 50% 100%, rgba(212,163,115,0.04), transparent 70%),
+        var(--ab-bg);
+    }
+
+    .ab-star-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* top nav */
+    .ab-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 40px;
+      background: linear-gradient(180deg, rgba(18,12,15,0.96) 0%, rgba(18,12,15,0.62) 70%, transparent);
+      backdrop-filter: blur(8px);
+      transition: opacity 0.5s ease;
+    }
+    body.is-zoomed .ab-nav { opacity: 0; pointer-events: none; }
+    .ab-back {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: none; border: none; color: var(--ink-dim);
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .ab-back:hover { color: var(--orange); }
+    .ab-back .arrow { transition: transform 0.3s ease; display: inline-block; }
+    .ab-back:hover .arrow { transform: translateX(-4px); }
+    .ab-brand {
+      font-family: 'Instrument Serif', serif; font-size: 18px;
+      color: var(--ink); letter-spacing: 0.02em;
+    }
+    .ab-brand em { color: var(--orange); font-style: italic; }
+    .ab-counter {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.22em; color: var(--ink-faint); text-transform: uppercase;
+    }
+    .ab-counter b { color: var(--orange); font-weight: 400; }
+
+    /* hero — sits above the field */
+    .ab-hero {
+      position: fixed; top: 78px; left: 0; right: 0; z-index: 5;
+      padding: 4px 40px 0;
+      display: flex; justify-content: space-between; align-items: baseline; gap: 30px;
+      transition: opacity 0.5s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+    body.is-zoomed .ab-hero { opacity: 0; transform: translateY(-12px); }
+    .ab-hero > * { pointer-events: auto; }
+    .ab-kicker {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.32em; text-transform: uppercase; color: var(--ink-faint);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .ab-kicker b { color: var(--ink-dim); font-weight: 400; }
+    .ab-lede {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-faint);
+      margin: 0; text-align: right;
+    }
+
+    /* floating field */
+    .gx-field {
+      position: relative;
+      width: 100%;
+      height: auto;
+      min-height: 1900px;
+      z-index: 3;
+      transform-origin: 0 0;
+      transition: transform 1.4s cubic-bezier(0.6, 0.02, 0.2, 1), filter 0.8s ease;
+      will-change: transform;
+    }
+
+    .gx-item {
+      position: absolute;
+      width: calc(var(--gx-size, 320px) + 140px);
+      height: calc(var(--gx-size, 320px) + 160px);
+      transform: translate(-50%, 0);
+      cursor: pointer;
+      background: none !important;
+      background-color: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      transition: opacity 0.6s ease;
+      overflow: visible !important;
+      appearance: none;
+      -webkit-appearance: none;
+      z-index: 4;
+    }
+    .gx-item[data-id="me"]      { left: 18%; top: 120px; }
+    .gx-item[data-id="iron"]    { left: 80%; top: 130px; }
+    .gx-item[data-id="books"]   { left: 18%; top: 980px; }
+    .gx-item[data-id="writing"] { left: 80%; top: 980px; }
+    .gx-item[data-id="signal"]  { left: 50%; top: 560px; }
+
+    .gx-item {
+      animation: gxDrift 22s ease-in-out infinite;
+    }
+    .gx-item:nth-child(1) { animation-delay: 0s; }
+    .gx-item:nth-child(2) { animation-delay: -4s; }
+    .gx-item:nth-child(3) { animation-delay: -8s; }
+    .gx-item:nth-child(4) { animation-delay: -12s; }
+    .gx-item:nth-child(5) { animation-delay: -16s; }
+    @keyframes gxDrift {
+      0%, 100% { transform: translate(-50%, 0) translateY(0); }
+      50% { transform: translate(-50%, 0) translateY(-6px); }
+    }
+
+    .gx-visual {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: var(--gx-size, 320px);
+      height: var(--gx-size, 320px);
+      transform: translate(-50%, 0);
+      pointer-events: none;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: none !important;
+      background-color: transparent !important;
+    }
+
+    .gx-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      transition: filter 0.6s ease;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: none !important;
+      background-color: transparent !important;
+    }
+
+    .gx-overlay {
+      display: none;
+    }
+    @keyframes gxOverlaySpin {
+      from { transform: rotate(var(--ov-rot, 0deg)); }
+      to { transform: rotate(calc(var(--ov-rot, 0deg) + 360deg)); }
+    }
+
+    .gx-item:hover .gx-canvas,
+    .gx-item:hover .gx-overlay {
+      filter: brightness(1.4) drop-shadow(0 0 24px var(--gx-glow, rgba(239,230,216,0.25)));
+    }
+
+    /* label */
+    .gx-label {
+      position: absolute;
+      left: 50%;
+      top: calc(var(--gx-size, 320px) + 22px);
+      transform: translateX(-50%);
+      pointer-events: none;
+      transition: opacity 0.4s ease, color 0.4s ease, transform 0.4s ease;
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(30px, 4vw, 56px);
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      color: rgba(239,230,216,0.92);
+      white-space: normal;
+      text-wrap: balance;
+      max-width: 340px;
+      text-align: center;
+    }
+    .gx-item[data-id="me"] .gx-label { color: #ecd4a2; }
+    .gx-item[data-id="iron"] .gx-label { color: #efb0c6; }
+    .gx-item[data-id="books"] .gx-label { color: #b9ccff; }
+    .gx-item[data-id="writing"] .gx-label { color: #cde7a8; }
+    .gx-item[data-id="signal"] .gx-label { color: #b8efe3; }
+    .gx-item:hover .gx-label {
+      transform: translateX(-50%) translateY(4px);
+      color: var(--ink);
+    }
+
+    /* dim other galaxies while one is flown in */
+    body.is-zoomed .galaxy:not(.is-active) { opacity: 0; pointer-events: none; }
+    body.is-zoomed .galaxy.is-active { cursor: default; pointer-events: none; }
+    body.is-zoomed .galaxy.is-active .gx-label { opacity: 0; }
+    body.is-zoomed .gx-field {
+      filter: brightness(0.5) blur(0.5px);
+    }
+
+    /* faint stray dust (vestigial — no constellation lines) */
+    .gx-edges { display: none; }
+
+    /* === CONTENT PANEL (docks when galaxy is flown in) === */
+    .panel {
+      position: fixed; inset: 0; z-index: 40;
+      display: grid; grid-template-columns: minmax(0, 1fr) min(620px, 48vw);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+    .panel.is-open {
+      pointer-events: auto; opacity: 1;
+    }
+    body.is-unzooming .panel {
+      transition-delay: 0s;
+    }
+    /* left side — gives the galaxy room to breathe; can hold a "title" treatment */
+    .panel-stage {
+      position: relative; padding: 80px 60px 80px 80px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transform: translateY(20px); opacity: 0;
+      transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
+    }
+    body.is-zoomed .panel.is-open .panel-stage { opacity: 1; transform: translateY(0); }
+    body.is-unzooming .panel-stage {
+      transition-delay: 0s, 0s;
+    }
+    .panel-kicker { display: none; }
+    .panel-kicker .pk-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--orange); box-shadow: 0 0 12px var(--orange);
+    }
+    .panel-title {
+      font-family: 'Instrument Serif', serif; font-weight: 400;
+      font-size: clamp(46px, 6.4vw, 84px); line-height: 1.03;
+      color: var(--ink); margin: 0; letter-spacing: -0.01em;
+      max-width: 16ch; text-wrap: pretty;
+    }
+    .panel-title em { color: var(--orange); font-style: italic; }
+    .panel-coord {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-faint);
+    }
+    .panel-coord b { color: var(--ink-dim); font-weight: 400; }
+
+    /* right side — readable card */
+    .panel-card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(21,15,18,0.92) 0%, rgba(15,10,13,0.96) 100%);
+      border-left: 1px solid var(--line-strong);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 76px 56px 80px;
+      overflow-y: auto;
+      transform: translateX(40px); opacity: 0;
+      transition: opacity 0.7s ease 0.5s, transform 0.8s cubic-bezier(.2,.7,.2,1) 0.5s;
+    }
+    body.is-zoomed .panel.is-open .panel-card {
+      opacity: 1; transform: translateX(0);
+    }
+    body.is-unzooming .panel-card {
+      transition-delay: 0s, 0s;
+    }
+    .panel-card::-webkit-scrollbar { width: 5px; }
+    .panel-card::-webkit-scrollbar-track { background: transparent; }
+    .panel-card::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
+
+    .pc-section { display: none; }
+    .pc-section.on { display: block; animation: pcIn 0.6s ease 0.5s both; }
+    @keyframes pcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .pc-lead {
+      font-family: 'Instrument Serif', serif; font-style: italic;
+      font-size: 22px; line-height: 1.45; color: var(--gold);
+      margin: 0 0 22px; text-wrap: pretty;
+    }
+    .pc-prose p {
+      font-family: 'Instrument Serif', serif; font-size: 19px;
+      line-height: 1.55; color: var(--ink-dim);
+      margin: 0 0 16px; text-wrap: pretty;
+    }
+    .pc-prose p:first-of-type { color: var(--ink); }
+    .pc-prose em, .pc-lead em { color: var(--orange); font-style: italic; }
+    .pc-section[data-id="me"] .pc-prose p:first-of-type { color: #e8c48a; }
+    .pc-section[data-id="me"] .pc-prose p { color: rgba(239,230,216,0.88); }
+    .pc-section[data-id="iron"] .pc-lead { color: #d68a78; }
+    .pc-section[data-id="iron"] .pc-prose p:first-of-type { color: #f0ddd4; }
+    .pc-section[data-id="iron"] .pc-prose p { color: rgba(239,230,216,0.84); }
+    .pc-section[data-id="books"] .pc-lead { color: #d6a8b8; }
+    .pc-section[data-id="books"] .pc-prose p:first-of-type { color: #f2dde5; }
+    .pc-section[data-id="books"] .pc-prose p { color: rgba(239,230,216,0.86); }
+    .pc-section[data-id="writing"] .pc-lead { color: #a8c2d8; }
+    .pc-section[data-id="writing"] .pc-prose p:first-of-type { color: #d9e5ef; }
+    .pc-section[data-id="writing"] .pc-prose p { color: rgba(239,230,216,0.86); }
+    .career-book {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: calc(100vh - 152px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(207,194,173,0.05), transparent 26%),
+        radial-gradient(circle at 14% 54%, rgba(173,165,186,0.04), transparent 28%),
+        linear-gradient(180deg, rgba(17,13,16,0.74) 0%, rgba(13,10,13,0.88) 100%);
+    }
+    .cb-shadow-fold {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 60px;
+      background: linear-gradient(90deg, rgba(7,6,10,0.42), rgba(7,6,10,0.14) 48%, transparent);
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .cb-shadow-fold.show { opacity: 1; }
+    .cb-hint {
+      position: absolute;
+      top: 50%; right: 16px;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      color: rgba(239,230,216,0.12);
+      writing-mode: vertical-rl;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      z-index: 25;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .cb-pages {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      perspective: 1800px;
+    }
+    .cb-pg {
+      position: absolute;
+      inset: 0;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform 0.9s cubic-bezier(0.4, 0.1, 0.2, 1);
+      z-index: 1;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px rgba(207,194,173,0.03);
+    }
+    .cb-pg-front, .cb-pg-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+    }
+    .cb-pg-front {
+      background:
+        radial-gradient(circle at 72% 18%, rgba(207,194,173,0.12), transparent 30%),
+        radial-gradient(circle at 18% 72%, rgba(167,160,181,0.08), transparent 34%),
+        linear-gradient(170deg, rgba(29,24,30,0.96), rgba(19,15,20,0.98) 56%, rgba(13,10,14,0.99) 100%);
+      padding: 48px 40px 72px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-shadow:
+        inset 0 0 0 1px rgba(207,194,173,0.08),
+        inset 0 18px 36px rgba(207,194,173,0.025),
+        inset 0 -28px 60px rgba(172,164,182,0.03);
+    }
+    .cb-pg-front::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(180deg, transparent 0px, transparent 28px, rgba(207,194,173,0.014) 28px, rgba(207,194,173,0.014) 29px),
+        linear-gradient(90deg, rgba(207,194,173,0.012), transparent 12%, transparent 88%, rgba(171,162,178,0.02));
+      pointer-events: none;
+    }
+    .cb-pg-front::after {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
+      background: linear-gradient(90deg, rgba(207,194,173,0.06), transparent);
+      pointer-events: none;
+    }
+    .cb-pg-back {
+      background:
+        radial-gradient(circle at 58% 24%, rgba(207,194,173,0.08), transparent 34%),
+        radial-gradient(circle at 22% 70%, rgba(171,162,178,0.06), transparent 32%),
+        linear-gradient(170deg, rgba(24,19,25,0.98), rgba(13,10,14,1));
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .cb-pg-back::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(180deg, transparent 0px, transparent 28px, rgba(207,194,173,0.012) 28px, rgba(207,194,173,0.012) 29px);
+      pointer-events: none;
+    }
+    .cb-back-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      color: rgba(239,230,216,0.07);
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-weight: 500;
+    }
+    .cb-back-mark {
+      width: 30px; height: 1px;
+      background: rgba(207,194,173,0.18);
+    }
+    .cb-ch-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      color: rgba(207,194,173,0.58);
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+    .cb-ch-open {
+      font-family: 'Instrument Serif', serif;
+      font-size: 28px;
+      color: #f0e9df;
+      line-height: 1.32;
+      margin-bottom: 18px;
+    }
+    .cb-ch-open em {
+      color: #d9cdc0;
+      font-style: italic;
+    }
+    .cb-ch-body {
+      font-family: 'Instrument Serif', serif;
+      font-size: 17px;
+      color: rgba(226,220,212,0.84);
+      line-height: 1.72;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cb-ch-body::-webkit-scrollbar { width: 3px; }
+    .cb-ch-body::-webkit-scrollbar-thumb { background: rgba(207,194,173,0.34); border-radius: 2px; }
+    .cb-ch-body p { margin-bottom: 16px; }
+    .cb-ch-body p:last-child { margin-bottom: 0; }
+    .cb-pg-foot {
+      position: absolute;
+      bottom: 16px; left: 36px; right: 36px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .cb-pg-n {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: rgba(239,230,216,0.15);
+    }
+    .cb-pg.flipped {
+      transform: rotateY(-150deg);
+      z-index: 10;
+    }
+    .cb-nav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(0deg, rgba(16,12,15,0.98) 55%, rgba(16,12,15,0.78) 80%, transparent);
+      z-index: 30;
+    }
+    .cb-nav-btn {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 0.5px solid rgba(207,194,173,0.16);
+      background: transparent;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: rgba(216,207,195,0.72);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+    }
+    .cb-nav-btn:hover {
+      border-color: #d8cec1;
+      color: #efe6d8;
+      background: rgba(207,194,173,0.06);
+      box-shadow: 0 0 18px rgba(207,194,173,0.08);
+    }
+    .cb-nav-btn:disabled { opacity: 0.15; cursor: not-allowed; pointer-events: none; }
+    .cb-nav-dots {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+      justify-content: center;
+    }
+    .cb-nav-dot {
+      width: 24px; height: 2.5px;
+      border-radius: 2px;
+      background: rgba(207,194,173,0.10);
+      transition: all 0.4s;
+      cursor: pointer;
+    }
+    .cb-nav-dot.on { background: #efe6d8; box-shadow: 0 0 10px rgba(207,194,173,0.16); }
+    .cb-nav-dot.past { background: rgba(207,194,173,0.34); }
+    .career-book {
+      display: none;
+    }
+    .panel-card[data-active="signal"] .pc-section[data-id="signal"].on {
+      height: 100%;
+      min-height: calc(100vh - 152px);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-card[data-active="signal"] .pc-section[data-id="signal"].on .career-book {
+      display: flex;
+    }
+
+    .pc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 22px; }
+    .pc-tag {
+      padding: 5px 12px; border: 1px solid var(--line);
+      border-radius: 999px; font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 0.14em; color: var(--ink-dim);
+    }
+
+    /* identification card */
+    .ident {
+      margin-top: 30px; padding: 22px;
+      border: 1px solid var(--line); border-radius: 6px;
+      background: rgba(239,230,216,0.02);
+      display: grid; grid-template-columns: 96px 1fr; gap: 22px; align-items: center;
+    }
+    .ident-portrait {
+      width: 96px; height: 96px; border-radius: 50%; overflow: hidden;
+      border: 1px solid var(--line-strong);
+    }
+    .ident-portrait image-slot { display: block; width: 100%; height: 100%; }
+    .ident-meta { display: flex; flex-direction: column; gap: 4px; }
+    .ident-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--orange); }
+    .ident-name { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--ink); }
+    .ident-coord { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-faint); }
+
+    /* polaroids (gym) */
+    .polaroids {
+      display: flex; gap: 18px; flex-wrap: wrap; margin-top: 24px;
+      justify-content: center;
+    }
+    .pol {
+      background: #f4ecd9; padding: 12px 12px 26px;
+      box-shadow: 0 14px 30px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.2);
+      display: flex; flex-direction: column; gap: 8px;
+      transform: rotate(var(--rot, 0deg));
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .pol:hover { transform: rotate(0deg) translateY(-4px); box-shadow: 0 20px 36px -10px rgba(0,0,0,0.55); z-index: 2; }
+    .pol-frame { width: 150px; height: 180px; background: #1a1115; overflow: hidden; }
+    .pol-frame image-slot,
+    .pol-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* book shelf */
+    .shelf {
+      display: flex; flex-direction: column; gap: 16px; margin-top: 22px;
+    }
+    .book {
+      display: grid; grid-template-columns: 70px 1fr auto; gap: 18px;
+      align-items: center; padding: 12px;
+      border: 1px solid var(--line); border-radius: 4px;
+      background: rgba(239,230,216,0.02);
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    .book:hover { border-color: var(--line-strong); background: rgba(239,230,216,0.04); }
+    .book-cover {
+      width: 70px; height: 100px;
+      background: linear-gradient(135deg, #1a1115, #2a1a20);
+      border: 1px solid var(--line); overflow: hidden;
+    }
+    .book-cover image-slot { display: block; width: 100%; height: 100%; }
+    .book-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .book-title { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--ink); line-height: 1.15; }
+    .book-author { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--ink-dim); letter-spacing: 0.02em; }
+    .book-note { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 13px; color: var(--ink-faint); margin-top: 4px; }
+    .book-stars {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--gold); white-space: nowrap;
+    }
+    /* essays */
+    .essays { display: flex; flex-direction: column; gap: 4px; margin-top: 22px; }
+    .essay {
+      display: grid; grid-template-columns: 92px 1fr auto; gap: 18px;
+      align-items: center;
+      padding: 18px 8px; border-bottom: 1px solid var(--line);
+      cursor: pointer; text-decoration: none; color: inherit;
+      transition: padding 0.25s ease, background 0.25s ease;
+    }
+    .essay:hover { padding-left: 16px; background: rgba(239,230,216,0.02); }
+    .essay-thumb {
+      width: 92px;
+      height: 122px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a1115, #2a1a20);
+      box-shadow: 0 12px 28px -14px rgba(0,0,0,0.55);
+    }
+    .essay-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .essay-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .essay-title { font-family: 'Instrument Serif', serif; font-size: 19px; color: var(--ink); line-height: 1.25; }
+    .essay-arrow { color: var(--orange); transition: transform 0.25s ease; }
+    .essay:hover .essay-arrow { transform: translateX(4px); }
+    .essay-meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint);
+      margin-top: 6px;
+    }
+
+    /* free hours chips */
+    .chip-row {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px;
+    }
+    .chip {
+      padding: 8px 14px; border: 1px solid var(--line);
+      border-radius: 999px; font-family: 'Instrument Serif', serif;
+      font-style: italic; font-size: 14px; color: var(--ink-dim);
+      background: rgba(239,230,216,0.02);
+    }
+    .chip:nth-child(3n) { color: var(--gold); border-color: rgba(212,163,115,0.25); }
+    .chip:nth-child(5n) { color: var(--rose); border-color: rgba(214,168,168,0.25); }
+
+    .pc-foot {
+      margin-top: 36px; padding-top: 22px;
+      border-top: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint);
+    }
+    .pc-foot em { color: var(--gold); font-style: normal; }
+
+    /* back-to-sky button */
+    .back-sky {
+      position: fixed; top: 30px; left: 36px; z-index: 80;
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 12px 20px 12px 18px;
+      background: rgba(15,10,13,0.7); backdrop-filter: blur(8px);
+      border: 1px solid var(--line-strong); border-radius: 999px;
+      color: var(--ink); font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0; transform: translateY(-8px) scale(0.96);
+      transition: opacity 0.4s ease 0.4s, transform 0.4s ease 0.4s,
+                  border-color 0.25s ease, color 0.25s ease;
+      pointer-events: none;
+    }
+    body.is-zoomed .back-sky {
+      opacity: 1; transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    body.is-unzooming .back-sky {
+      transition-delay: 0s, 0s, 0s;
+    }
+    .back-sky:hover { border-color: var(--orange); color: var(--orange); }
+    .back-sky .arrow {
+      display: inline-block; transition: transform 0.3s ease;
+    }
+    .back-sky:hover .arrow { transform: translateX(-4px); }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .panel { grid-template-columns: 1fr; }
+      .panel-stage { padding: 60px 28px 18px; }
+      .panel-card { padding: 26px 28px 60px; border-left: none; border-top: 1px solid var(--line-strong); }
+      .ab-hero { grid-template-columns: 1fr; padding: 12px 24px 0; }
+      .ab-lede { text-align: left; }
+      .ab-nav { padding: 18px 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ab-root">
+
+    <!-- starfield -->
+    <canvas class="ab-star-canvas" id="ab-star-canvas"></canvas>
+
+    <!-- top nav -->
+    <nav class="ab-nav">
+      <button class="ab-back" onclick="goBack()">
+        <span class="arrow">←</span>
+        <span>back to the universe</span>
+      </button>
+      <div class="ab-brand">Anvita's <em>Lune</em></div>
+      <div class="ab-counter"><b>5</b> / 5 galaxies</div>
+    </nav>
+
+    <!-- (no constellation lines — keep it sparse) -->
+
+    <!-- floating galaxies field -->
+    <div class="gx-field" id="gx-field">
+
+      <!-- 1 · Who I am — warm gold -->
+      <button class="galaxy gx-item galaxy-me" data-id="me" data-palette="ember" onclick="zoomIn(this)"
+        style="--gx-size: 620px; --gx-glow: rgba(232,196,138,0.35); --ov-rot: -8deg;">
+        <span class="gx-visual">
+          <canvas class="gx-canvas"></canvas>
+          <svg class="gx-overlay" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <ellipse cx="160" cy="160" rx="130" ry="55" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="100" ry="42" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="66" ry="28" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1" stroke-dasharray="2 5"></ellipse>
+            <g class="gx-ticks"></g>
+          </svg>
+        </span>
+        <span class="gx-label">Who I Am</span>
+      </button>
+
+      <!-- 2 · Iron & sweat — terracotta -->
+      <button class="galaxy gx-item galaxy-iron" data-id="iron" data-palette="rose" onclick="zoomIn(this)"
+        style="--gx-size: 520px; --gx-glow: rgba(220,110,170,0.34); --ov-rot: 4deg;">
+        <span class="gx-visual">
+          <canvas class="gx-canvas"></canvas>
+          <svg class="gx-overlay" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <ellipse cx="160" cy="160" rx="130" ry="55" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="100" ry="42" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="66" ry="28" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1" stroke-dasharray="2 5"></ellipse>
+            <g class="gx-ticks"></g>
+          </svg>
+        </span>
+        <span class="gx-label">Iron &amp; Sweat</span>
+      </button>
+
+      <!-- 3 · On the shelf — dusty rose -->
+      <button class="galaxy gx-item galaxy-books" data-id="books" data-palette="ion" onclick="zoomIn(this)"
+        style="--gx-size: 560px; --gx-glow: rgba(150,180,255,0.34); --ov-rot: 16deg;">
+        <span class="gx-visual">
+          <canvas class="gx-canvas"></canvas>
+          <svg class="gx-overlay" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <ellipse cx="160" cy="160" rx="130" ry="55" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="100" ry="42" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="66" ry="28" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1" stroke-dasharray="2 5"></ellipse>
+            <g class="gx-ticks"></g>
+          </svg>
+        </span>
+        <span class="gx-label">On The Shelf</span>
+      </button>
+
+      <!-- 4 · Recently writing — pale blue -->
+      <button class="galaxy gx-item galaxy-writing" data-id="writing" data-palette="verdigris" onclick="zoomIn(this)"
+        style="--gx-size: 500px; --gx-glow: rgba(180,230,140,0.3); --ov-rot: 28deg;">
+        <span class="gx-visual">
+          <canvas class="gx-canvas"></canvas>
+          <svg class="gx-overlay" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <ellipse cx="160" cy="160" rx="130" ry="55" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="100" ry="42" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="66" ry="28" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1" stroke-dasharray="2 5"></ellipse>
+            <g class="gx-ticks"></g>
+          </svg>
+        </span>
+        <span class="gx-label">Recently Writing</span>
+      </button>
+
+      <!-- 5 · Career break / signal -->
+      <button class="galaxy gx-item galaxy-signal" data-id="signal" data-palette="aurora" onclick="zoomIn(this)"
+        style="--gx-size: 540px; --gx-glow: rgba(140,235,210,0.32); --ov-rot: 40deg;">
+        <span class="gx-visual">
+          <canvas class="gx-canvas"></canvas>
+          <svg class="gx-overlay" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <ellipse cx="160" cy="160" rx="130" ry="55" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="100" ry="42" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="160" rx="66" ry="28" fill="none" stroke="rgba(239,230,216,0.02)" stroke-width="1" stroke-dasharray="2 5"></ellipse>
+            <g class="gx-ticks"></g>
+          </svg>
+        </span>
+        <span class="gx-label">Career Break</span>
+      </button>
+
+    </div>
+
+    <!-- back to sky button (visible when zoomed in) -->
+    <button class="back-sky" onclick="zoomOut()">
+      <span class="arrow">←</span>
+      <span>back to the sky</span>
+    </button>
+
+    <!-- content panel (one per section) -->
+    <div class="panel" id="panel">
+      <div class="panel-stage">
+        <div>
+          <div class="panel-kicker"><span class="pk-dot" id="pk-dot"></span><span id="pk-text">Galaxy 01 · Who I am</span></div>
+          <h2 class="panel-title" id="panel-title">Who I <em>am</em>.</h2>
+        </div>
+        <div class="panel-coord" id="panel-coord">28.6°N · 77.2°E · Earth</div>
+      </div>
+
+      <div class="panel-card">
+
+        <!-- Who I am -->
+        <section class="pc-section" data-id="me">
+          <div class="pc-prose">
+            <p>I'm curious. Like, annoyingly curious. About people, about why things are the way they are, about what someone actually means when they say they're fine. I read body language, I notice things, I try to understand humans maybe too much sometimes. But I can't help it. That's just how my brain works.</p>
+            <p>I love helping people. Genuinely. Friends, family, anyone. If someone around me is struggling, I'm going to try to fix it. Not because I have all the answers I don't but because if even one thing I do can bring a smile to somebody's face, why wouldn't I? The feeling you get after that? I can't even explain it.</p>
+            <p>I dream about travelling. I haven't been to many places honestly, but I've fantasized about all of them. Exploring the unexplored that's always been the dream.</p>
+            <p>There are a hundred things going on in my head at any given moment. I'm ambitious, I'm driven, but I also get overwhelmed. I'm still working on the discipline part. I think I'm halfway there. Still figuring it out.</p>
+            <p>Oh boy, what a journey this life has been. So much to learn, so much to give, so much to take. I'm not the best version of myself yet I know that. But I'm not afraid of it either.</p>
+            <p>Be thankful for what you have. Live the present. That's it. That's the whole philosophy.</p>
+            <p>A portfolio wouldn't be enough to define who I am. But this is my attempt.</p>
+          </div>
+        </section>
+
+        <!-- Iron & sweat -->
+        <section class="pc-section" data-id="iron">
+          <p class="pc-lead">I never planned to lose 35 kilograms. I just loved food, I still do.</p>
+          <div class="pc-prose">
+            <p>But my body started sending signals I couldn't ignore. Health reasons. The kind where a doctor looks at you and you know the conversation isn't casual anymore.</p>
+            <p>So I started moving. Cardio, nothing fancy. The first five kilograms came off and something shifted not just on the scale, but in my head. For the first time in a long time, I felt confident. Not the loud kind. The quiet kind, the kind where you look in the mirror and believe the person staring back can actually do this.</p>
+            <p>Two years of showing up. Two years of choosing the run over the couch. 108 became 73. Pure perseverance, no shortcuts, no hacks, just hard work compounding day after day.</p>
+            <p>I won't pretend the story ends clean. I still deal with loose skin. I'm trying to get consistent with weight training and honestly, I don't love it the way I loved cardio. Some days are harder than others.</p>
+            <p>But here's what 35 kilograms taught me: if you believe you can do something, the process stops feeling like a burden and starts feeling like part of your life. It still takes time. It still takes hardwork. But when the results come that feeling is out of this world.</p>
+            <p>I might not be where I want to be yet. But I'm proud of the journey, the person it made me, and the fact that I earned every single kilogram of it. Perseverance, confidence, belief I didn't read about these words. I lived with them.</p>
+          </div>
+          <div class="polaroids">
+            <div class="pol" style="--rot: -5deg;">
+              <div class="pol-frame"><img src="./assets/media/about-gym-1.jpeg" alt="Gym photo 1"></div>
+            </div>
+            <div class="pol" style="--rot: 3deg;">
+              <div class="pol-frame"><img src="./assets/media/about-gym-2.jpeg" alt="Gym photo 2"></div>
+            </div>
+            <div class="pol" style="--rot: -2deg;">
+              <div class="pol-frame"><img src="./assets/media/about-gym-3.jpeg" alt="Gym photo 3"></div>
+            </div>
+          </div>
+          <div class="pc-foot">filed under <em>weekly ritual</em></div>
+        </section>
+
+        <!-- On the shelf -->
+        <section class="pc-section" data-id="books">
+          <p class="pc-lead">Books are my calm in chaos. Literally.</p>
+          <div class="pc-prose">
+            <p>I might not remember everything I read honestly I probably forget most of it. But there's always this one thing from each book, one line, one idea, one learning that just stays with you. And that's enough. That's always been enough.</p>
+            <p>I love the smell of books. I know that's the most clich&eacute; thing a reader can say but I genuinely do. There's something about holding a physical book that no Kindle will ever replace.</p>
+            <p>I also have this weird habit I carry a book with me wherever I go. Doesn't matter where. And I know I'm probably not going to read it. I know that. But just having it close to me gives me this peace, this calmness, a feeling I can't really explain. It's like a safety net I never actually use but always need to have.</p>
+            <p>Books are just a part of me. A part I never want to lose.</p>
+          </div>
+          <div class="polaroids">
+            <div class="pol" style="--rot: -4deg;">
+              <div class="pol-frame"><img src="./assets/media/about-book-1.jpeg" alt="Book photo 1"></div>
+            </div>
+            <div class="pol" style="--rot: 3deg;">
+              <div class="pol-frame"><img src="./assets/media/about-book-2.jpeg" alt="Book photo 2"></div>
+            </div>
+            <div class="pol" style="--rot: -2deg;">
+              <div class="pol-frame"><img src="./assets/media/about-book-3.jpeg" alt="Book photo 3"></div>
+            </div>
+            <div class="pol" style="--rot: 4deg;">
+              <div class="pol-frame"><img src="./assets/media/about-book-4.jpeg" alt="Book photo 4"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Writing -->
+        <section class="pc-section" data-id="writing">
+          <p class="pc-lead">Writing comes naturally to me. It always has.</p>
+          <div class="pc-prose">
+            <p>I've always been vocal about my feelings with people I love, but there's something different about writing it down. When I speak, I forget what I wanted to say. But when I write, it just flows. Like butter. One thought leads to the next and the next and suddenly there's a whole chain of things pouring out of me that I didn't even know were in there.</p>
+            <p>That's the part I love the most: the unexpected. You sit down to write one thing and you end up discovering something about yourself you didn't know was sitting there, waiting.</p>
+            <p>I haven't published much. Honestly, I have so many unfinished pieces just sitting in my drafts. Not because they're incomplete — most of them are done. But I can never figure out the ending. The piece could be finished and I'll still feel like it's not. That feeling of incompleteness stops me every time. It's the one thing about writing I'm still fighting with.</p>
+            <p>I'm no writer. Not at all. But the feeling it gives me? Surreal. A blank page with no judgements, no fear, no audience — just you and your thoughts. That's always been the purpose. Pour it out, open up, express. That's it.</p>
+            <p>I want to always keep that alive in me.</p>
+          </div>
+          <div class="essays">
+            <a class="essay" href="https://medium.com/@inthebetween_/behind-the-concrete-walls-of-my-head-c837bc4ae23a" target="_blank" rel="noreferrer">
+              <span class="essay-thumb"><img src="./assets/media/about-writing-photo.jpeg" alt="Writing visual"></span>
+              <span class="essay-copy">
+                <span class="essay-title">Behind the Concrete Walls of My Head</span>
+                <span class="essay-meta">published</span>
+              </span>
+              <span class="essay-arrow">→</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Career break -->
+        <section class="pc-section" data-id="signal">
+          <div class="career-book">
+            <div class="cb-spine"></div>
+            <div class="cb-shadow-fold" id="cbShadow"></div>
+            <div class="cb-hint" id="cbHint">click page to turn ›</div>
+            <div class="cb-pages" id="cbPages">
+              <div class="cb-pg" id="cbP0" style="z-index:5" onclick="cbFlipNext()">
+                <div class="cb-pg-front">
+                  <div class="cb-ch-name">Rupture</div>
+                  <div class="cb-ch-open">I left my job because life <em>asked me to.</em></div>
+                  <div class="cb-ch-body">
+                    <p>I left my job because life asked me to. Family reasons the kind you don't get to plan for. One day you're in a standup talking about sprint velocity, and the next day none of that matters anymore.</p>
+                    <p>The first few weeks were weird. You spend three years waking up knowing exactly what you're supposed to do, and then suddenly there's nothing. No Slack pings, no standups, no pull requests waiting. Just silence. And honestly? The silence was loud.</p>
+                  </div>
+                  <div class="cb-pg-foot"><span class="cb-pg-n">1</span><span class="cb-pg-n">5</span></div>
+                </div>
+                <div class="cb-pg-back"><div class="cb-back-title">Rupture</div><div class="cb-back-mark"></div></div>
+              </div>
+              <div class="cb-pg" id="cbP1" style="z-index:4" onclick="cbFlipNext()">
+                <div class="cb-pg-front">
+                  <div class="cb-ch-name">Noise</div>
+                  <div class="cb-ch-open">Everyone had <em>opinions.</em></div>
+                  <div class="cb-ch-body">
+                    <p>Everyone around me had opinions. "Take a break, you deserve it." "Don't take too long, gaps look bad." "Have you tried applying to Google?" I heard all of it. And for a while I didn't know who to listen to including myself.</p>
+                    <p>But I knew one thing I didn't want to just jump into the next thing for the sake of having something to do. I've seen people do that. Take the first offer, update the LinkedIn, move on. I didn't want to be that person. Not because there's anything wrong with it, but because I had this feeling that if I don't figure out what I actually want right now, I never will.</p>
+                  </div>
+                  <div class="cb-pg-foot"><span class="cb-pg-n">2</span><span class="cb-pg-n">5</span></div>
+                </div>
+                <div class="cb-pg-back"><div class="cb-back-title">Noise</div><div class="cb-back-mark"></div></div>
+              </div>
+              <div class="cb-pg" id="cbP2" style="z-index:3" onclick="cbFlipNext()">
+                <div class="cb-pg-front">
+                  <div class="cb-ch-name">Exploration</div>
+                  <div class="cb-ch-open">So I <em>explored.</em></div>
+                  <div class="cb-ch-body">
+                    <p>I liked DevOps, always had. Got myself certified by CKA, CKAD, Terraform, AWS. Cleared all four. Had a lot of fun doing it honestly. There's something satisfying about studying for something, showing up, and proving to yourself that you can do it. Those four certificates weren't for my resume they were for my confidence.</p>
+                    <p>And I had a plan. Move into DevOps engineering. I thought that was it. I thought I liked it enough.</p>
+                    <p>But even with the plan in place, something didn't sit right. I couldn't explain it at the time I was doing the work, clearing the certs, telling people "yeah I'm moving into DevOps" and yet there was this quiet feeling that I wasn't fully sure. Not about DevOps. About whether this was really it for me.</p>
+                  </div>
+                  <div class="cb-pg-foot"><span class="cb-pg-n">3</span><span class="cb-pg-n">5</span></div>
+                </div>
+                <div class="cb-pg-back"><div class="cb-back-title">Exploration</div><div class="cb-back-mark"></div></div>
+              </div>
+              <div class="cb-pg" id="cbP3" style="z-index:2" onclick="cbFlipNext()">
+                <div class="cb-pg-front">
+                  <div class="cb-ch-name">Discovery</div>
+                  <div class="cb-ch-open">The gut feeling was <em>right.</em></div>
+                  <div class="cb-ch-body">
+                    <p>So I did what I always do when I'm unsure I went digging. Read about different roles, different paths, talked to people, tried to understand where I'd actually fit. And that's when I came across product management. Not from a career counsellor or a LinkedIn ad from my own research, my own reading, my own gut.</p>
+                    <p>I signed up for a PM fellowship. Then a Founders Office fellowship. And those fellowships broke something open in me. For the first time, I was in rooms where people were talking about users, about product decisions, about trade-offs that actually mattered. And I wasn't lost in those rooms. I was home.</p>
+                    <p>I don't want to sit behind a laptop waiting for AI to write code for me. I want to be in the room where the product is being decided. I want to be the person asking why, not just how.</p>
+                  </div>
+                  <div class="cb-pg-foot"><span class="cb-pg-n">4</span><span class="cb-pg-n">5</span></div>
+                </div>
+                <div class="cb-pg-back"><div class="cb-back-title">Discovery</div><div class="cb-back-mark"></div></div>
+              </div>
+              <div class="cb-pg" id="cbP4" style="z-index:1">
+                <div class="cb-pg-front">
+                  <div class="cb-ch-name">Clarity</div>
+                  <div class="cb-ch-open">This break didn't <em>set me back.</em></div>
+                  <div class="cb-ch-body">
+                    <p>I won't pretend this break was some beautiful montage of self-discovery. There were days I felt behind. Days I scrolled LinkedIn and saw people my age getting promoted and wondered if I made a mistake. Days where I had ten ideas and zero energy to act on any of them. Days where I just sat with the discomfort of not having a job title to introduce myself with.</p>
+                    <p>But there were also days where something clicked. Where I read something and thought "this is exactly what I want to do." Where I finished a fellowship project and felt more alive than I ever did shipping code. Where I looked in the mirror and for the first time in a long time, I wasn't performing I was just being myself.</p>
+                    <p>I didn't do everything perfectly during this break. I was confused, I was messy, some days were harder than others. But every step even the uncertain ones taught me something about who I am and where I want to be.</p>
+                    <p>This break didn't set me back. It just pointed me in the right direction.</p>
+                  </div>
+                  <div class="cb-pg-foot"><span class="cb-pg-n">5</span><span class="cb-pg-n">5</span></div>
+                </div>
+                <div class="cb-pg-back"><div class="cb-back-title">Clarity</div><div class="cb-back-mark"></div></div>
+              </div>
+            </div>
+            <div class="cb-nav">
+              <button class="cb-nav-btn" id="cbPrev" onclick="cbFlipPrev()" disabled>◂ prev</button>
+              <div class="cb-nav-dots" id="cbDots"></div>
+              <button class="cb-nav-btn" id="cbNext" onclick="cbFlipNext()">next ▸</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="image-slot.js"></script>
+  <script>
+    const PALETTES = {
+      ember: [
+        'rgba(244,224,196,', 'rgba(244,192,137,', 'rgba(232,168,124,',
+        'rgba(214,168,168,', 'rgba(201,138,107,', 'rgba(239,230,216,'
+      ],
+      aurora: [
+        'rgba(220,255,240,', 'rgba(140,235,210,', 'rgba(96,200,200,',
+        'rgba(72,160,180,',  'rgba(110,220,180,', 'rgba(200,240,230,'
+      ],
+      rose: [
+        'rgba(255,225,240,', 'rgba(240,150,200,', 'rgba(220,110,170,',
+        'rgba(180,90,160,',  'rgba(150,80,180,',  'rgba(240,200,220,'
+      ],
+      ion: [
+        'rgba(220,235,255,', 'rgba(150,180,255,', 'rgba(110,140,240,',
+        'rgba(90,110,220,',  'rgba(140,100,230,', 'rgba(200,210,255,'
+      ],
+      verdigris: [
+        'rgba(235,255,210,', 'rgba(180,230,140,', 'rgba(140,200,110,',
+        'rgba(110,170,90,',  'rgba(90,150,130,',  'rgba(220,240,200,'
+      ],
+    };
+
+    const NEBULAS = {
+      ember:     [[244,192,137], [232,168,124], [186,110,120]],
+      aurora:    [[140,235,210], [96,200,200],  [60,140,160]],
+      rose:      [[240,150,200], [220,110,170], [150,70,150]],
+      ion:       [[150,180,255], [110,140,240], [90,90,200]],
+      verdigris: [[180,230,140], [140,200,110], [90,140,100]],
+    };
+
+    const GALAXY_MAP = {
+      me: 'ember',
+      iron: 'rose',
+      books: 'ion',
+      writing: 'verdigris',
+      signal: 'aurora',
+    };
+
+    const bgCanvas = document.getElementById('ab-star-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const galaxyInstances = [];
+    const bgStars = [];
+
+    function seededRng(seedString) {
+      let seed = 0;
+      for (let i = 0; i < seedString.length; i++) {
+        seed = (seed * 31 + seedString.charCodeAt(i)) >>> 0;
+      }
+      return function rand() {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+    }
+
+    function rgbaFrom(prefix, alpha) {
+      return `${prefix}${alpha})`;
+    }
+
+    function buildTicks(group) {
+      if (!group || group.dataset.ready === '1') return;
+      group.dataset.ready = '1';
+      const NS = 'http://www.w3.org/2000/svg';
+      const cx = 160;
+      const cy = 160;
+      const rx = 130;
+      const ry = 55;
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2;
+        const x1 = cx + Math.cos(a) * rx;
+        const y1 = cy + Math.sin(a) * ry;
+        const x2 = cx + Math.cos(a) * (rx + 4);
+        const y2 = cy + Math.sin(a) * (ry + 4);
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('x1', x1.toFixed(2));
+        line.setAttribute('y1', y1.toFixed(2));
+        line.setAttribute('x2', x2.toFixed(2));
+        line.setAttribute('y2', y2.toFixed(2));
+        line.setAttribute('stroke', 'rgba(239,230,216,0.06)');
+        line.setAttribute('stroke-width', '1');
+        group.appendChild(line);
+      }
+    }
+
+    function resizeBackground() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      bgCanvas.width = Math.round(window.innerWidth * dpr);
+      bgCanvas.height = Math.round(window.innerHeight * dpr);
+      bgCanvas.style.width = `${window.innerWidth}px`;
+      bgCanvas.style.height = `${window.innerHeight}px`;
+      bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeBackgroundStars() {
+      bgStars.length = 0;
+      const warmChance = 0.22;
+      for (let i = 0; i < 620; i++) {
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        const bright = Math.random() < 0.12;
+        bgStars.push({
+          x,
+          y,
+          homeX: x,
+          homeY: y,
+          r: bright ? 0.8 + Math.random() * 1.25 : 0.2 + Math.random() * 0.9,
+          a: bright ? 0.34 + Math.random() * 0.42 : 0.08 + Math.random() * 0.32,
+          glow: bright ? 4 + Math.random() * 8 : 0,
+          warm: Math.random() < warmChance,
+          twRate: 0.6 + Math.random() * 1.8,
+          phase: Math.random() * Math.PI * 2,
+          driftX: (Math.random() - 0.5) * 10,
+          driftY: (Math.random() - 0.5) * 14,
+          driftRate: 0.16 + Math.random() * 0.55,
+        });
+      }
+    }
+
+    function createGalaxyStars(id, size, paletteName) {
+      const rand = seededRng(`${id}-${paletteName}-${size}`);
+      const palette = PALETTES[paletteName];
+      const disk = [];
+      const bulge = [];
+      const armGap = (Math.PI * 2) / 3;
+
+      for (let i = 0; i < 4200; i++) {
+        const arm = i % 3;
+        const u = rand();
+        const r = 24 + Math.pow(rand(), 0.55) * (size * 0.42);
+        const jitter = (rand() - 0.5) * (1 - u * 0.55) * 0.55;
+        const theta = arm * armGap + Math.log(r / 18) * 4.8 + jitter;
+        const giant = rand() < 0.026;
+        const radius = giant ? 1.8 + rand() * 1.5 : 0.45 + rand() * 0.95;
+        const alpha = 0.42 + rand() * 0.58;
+        const colorIndex = rand() < 0.6 ? Math.floor(rand() * 2) : 2 + Math.floor(rand() * 4);
+        const speed = 0.05 / (0.35 + r / 55) * (0.85 + rand() * 0.3);
+        disk.push({
+          theta,
+          r,
+          radius,
+          alpha,
+          giant,
+          color: palette[colorIndex],
+          speed,
+        });
+      }
+
+      for (let i = 0; i < 620; i++) {
+        const theta = rand() * Math.PI * 2;
+        const r = Math.pow(rand(), 0.7) * 34;
+        const radius = 0.45 + rand() * 0.9;
+        const alpha = 0.68 + rand() * 0.32;
+        const speed = (0.10 + rand() * 0.05) * 0.006;
+        const colorIndex = Math.floor(rand() * 2);
+        bulge.push({
+          theta,
+          r,
+          radius,
+          alpha,
+          color: palette[colorIndex],
+          speed,
+        });
+      }
+
+      return { disk, bulge };
+    }
+
+    function initGalaxies() {
+      galaxyInstances.length = 0;
+      document.querySelectorAll('.gx-item').forEach((el) => {
+        const paletteName = GALAXY_MAP[el.dataset.id];
+        const size = parseFloat(getComputedStyle(el).getPropertyValue('--gx-size')) || 320;
+        const canvas = el.querySelector('.gx-canvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(size * dpr);
+        canvas.height = Math.round(size * dpr);
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+
+        buildTicks(el.querySelector('.gx-ticks'));
+
+        const stars = createGalaxyStars(el.dataset.id, size, paletteName);
+        galaxyInstances.push({
+          el,
+          ctx,
+          canvas,
+          dpr,
+          size,
+          paletteName,
+          palette: PALETTES[paletteName],
+          nebula: NEBULAS[paletteName],
+          disk: stars.disk,
+          bulge: stars.bulge,
+        });
+      });
+    }
+
+    function drawBackground(now) {
+      bgCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      for (const star of bgStars) {
+        const driftPhase = now * 0.00018 * star.driftRate + star.phase;
+        const x = star.homeX + Math.cos(driftPhase) * star.driftX;
+        const y = star.homeY + Math.sin(driftPhase * 1.2) * star.driftY;
+        const alpha = star.a * (0.55 + 0.45 * Math.sin(now * 0.001 * star.twRate + star.phase));
+        bgCtx.fillStyle = star.warm ? `rgba(232,168,124,${alpha})` : `rgba(239,230,216,${alpha})`;
+        if (star.glow) {
+          bgCtx.beginPath();
+          bgCtx.fillStyle = star.warm ? `rgba(232,168,124,${alpha * 0.15})` : `rgba(239,230,216,${alpha * 0.12})`;
+          bgCtx.arc(x, y, star.glow, 0, Math.PI * 2);
+          bgCtx.fill();
+          bgCtx.fillStyle = star.warm ? `rgba(232,168,124,${alpha})` : `rgba(239,230,216,${alpha})`;
+        }
+        bgCtx.beginPath();
+        bgCtx.arc(x, y, star.r, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+    }
+
+    function drawGalaxy(inst, dt, now) {
+      const { ctx, size, dpr, nebula, disk, bulge } = inst;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, size, size);
+
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.rotate(now * 0.0006);
+      ctx.scale(1, 0.42);
+
+      for (const star of disk) {
+        star.theta += star.speed * 0.0085 * dt;
+        const x = Math.cos(star.theta) * star.r;
+        const y = Math.sin(star.theta) * star.r;
+        if (star.giant) {
+          ctx.fillStyle = rgbaFrom(star.color, (star.alpha * 0.18).toFixed(3));
+          ctx.beginPath();
+          ctx.arc(x, y, star.radius * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = rgbaFrom(star.color, star.alpha.toFixed(3));
+        ctx.beginPath();
+        ctx.arc(x, y, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.scale(1, 1 / 0.42);
+      for (const star of bulge) {
+        star.theta += star.speed * dt;
+        const x = Math.cos(star.theta) * star.r;
+        const y = Math.sin(star.theta) * star.r;
+        ctx.fillStyle = rgbaFrom(star.color, star.alpha.toFixed(3));
+        ctx.beginPath();
+        ctx.arc(x, y, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    function resizeGalaxies() {
+      resizeBackground();
+      makeBackgroundStars();
+      initGalaxies();
+    }
+
+    resizeGalaxies();
+
+    let lastTick = performance.now();
+    function renderLoop(now) {
+      const dt = Math.min(2.5, (now - lastTick) / 16.67 || 1);
+      lastTick = now;
+      drawBackground(now);
+      for (const inst of galaxyInstances) {
+        drawGalaxy(inst, dt, now);
+      }
+      requestAnimationFrame(renderLoop);
+    }
+    requestAnimationFrame(renderLoop);
+
+    // ===== parallax on mouse move =====
+    (function parallax() {
+      const field = document.getElementById('gx-field');
+      let tx = 0, ty = 0, cx = 0, cy = 0;
+      let raf;
+      window.addEventListener('mousemove', (e) => {
+        if (document.body.classList.contains('is-zoomed')) return;
+        const px = (e.clientX / window.innerWidth - 0.5) * 2;
+        const py = (e.clientY / window.innerHeight - 0.5) * 2;
+        cx = -px * 12;
+        cy = -py * 10;
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      function tick() {
+        tx += (cx - tx) * 0.08;
+        ty += (cy - ty) * 0.08;
+        if (!document.body.classList.contains('is-zoomed')) {
+          field.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
+        }
+        if (Math.abs(cx - tx) > 0.05 || Math.abs(cy - ty) > 0.05) {
+          raf = requestAnimationFrame(tick);
+        } else {
+          raf = null;
+        }
+      }
+    })();
+
+    var cbCur = 0, cbTotal = 5, cbBusy = false;
+
+    function initBookDots() {
+      var dots = document.getElementById('cbDots');
+      if (!dots || dots.dataset.ready === '1') return;
+      dots.dataset.ready = '1';
+      for (var i = 0; i < cbTotal; i++) {
+        var d = document.createElement('div');
+        d.className = 'cb-nav-dot' + (i === 0 ? ' on' : '');
+        d.onclick = (function(x) { return function() { cbGoTo(x); }; })(i);
+        dots.appendChild(d);
+      }
+    }
+
+    function cbUpdateNav() {
+      var prev = document.getElementById('cbPrev');
+      var next = document.getElementById('cbNext');
+      if (prev) prev.disabled = cbCur === 0;
+      if (next) next.disabled = cbCur === cbTotal - 1;
+      var dots = document.getElementById('cbDots');
+      if (!dots) return;
+      dots.querySelectorAll('.cb-nav-dot').forEach(function(d, i) {
+        d.className = 'cb-nav-dot' + (i === cbCur ? ' on' : i < cbCur ? ' past' : '');
+      });
+    }
+
+    function cbFlipNext() {
+      if (cbBusy || cbCur >= cbTotal - 1) return;
+      cbBusy = true;
+      var hint = document.getElementById('cbHint');
+      if (hint) hint.style.opacity = '0';
+      var pg = document.getElementById('cbP' + cbCur);
+      if (pg) {
+        pg.classList.add('flipped');
+        pg.style.zIndex = 10 + cbCur;
+      }
+      var shadow = document.getElementById('cbShadow');
+      if (shadow) {
+        shadow.classList.add('show');
+        setTimeout(function() { shadow.classList.remove('show'); }, 500);
+      }
+      cbCur++;
+      cbUpdateNav();
+      setTimeout(function() { cbBusy = false; }, 900);
+    }
+
+    function cbFlipPrev() {
+      if (cbBusy || cbCur <= 0) return;
+      cbBusy = true;
+      cbCur--;
+      var pg = document.getElementById('cbP' + cbCur);
+      if (pg) {
+        pg.classList.remove('flipped');
+        pg.style.zIndex = 5 - cbCur;
+      }
+      var shadow = document.getElementById('cbShadow');
+      if (shadow) {
+        shadow.classList.add('show');
+        setTimeout(function() { shadow.classList.remove('show'); }, 500);
+      }
+      cbUpdateNav();
+      setTimeout(function() { cbBusy = false; }, 900);
+    }
+
+    function cbGoTo(idx) {
+      if (cbBusy || idx === cbCur) return;
+      if (idx > cbCur) {
+        cbFlipNext();
+        if (idx > cbCur) setTimeout(function() { cbGoTo(idx); }, 300);
+      } else {
+        cbFlipPrev();
+        if (idx < cbCur) setTimeout(function() { cbGoTo(idx); }, 300);
+      }
+    }
+
+    function cbReset() {
+      cbCur = 0;
+      cbBusy = false;
+      var hint = document.getElementById('cbHint');
+      if (hint) hint.style.opacity = '';
+      for (var i = 0; i < cbTotal; i++) {
+        var pg = document.getElementById('cbP' + i);
+        if (pg) {
+          pg.classList.remove('flipped');
+          pg.style.zIndex = 5 - i;
+        }
+      }
+      var shadow = document.getElementById('cbShadow');
+      if (shadow) shadow.classList.remove('show');
+      cbUpdateNav();
+    }
+
+    initBookDots();
+    cbUpdateNav();
+
+    // ===== fly-in / fly-out =====
+    const field = document.getElementById('gx-field');
+    const panel = document.getElementById('panel');
+    let activeId = null;
+    let isTransitioning = false;
+
+    function hidePanel() {
+      if (panel) panel.classList.remove('is-open');
+      const panelCard = document.querySelector('.panel-card');
+      if (panelCard) delete panelCard.dataset.active;
+      cbReset();
+    }
+
+    function zoomIn(el) {
+      if (isTransitioning) return;
+      document.body.classList.remove('is-unzooming');
+      var field = document.querySelector('.gx-field');
+      if (!field) return;
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var rect = el.getBoundingClientRect();
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var size = Math.max(rect.width, rect.height);
+      var fieldRect = field.getBoundingClientRect();
+      var gx = cx - fieldRect.left;
+      var gy = cy - fieldRect.top;
+      var scale = (Math.max(vw, vh) * 1.5) / size;
+      var tx = (vw / 2) - (gx * scale);
+      var ty = (vh / 2) - (gy * scale);
+      field.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+      field.style.filter = 'brightness(0.35) blur(1px)';
+      document.body.classList.add('is-zoomed');
+      el.classList.add('is-active');
+      var allItems = document.querySelectorAll('.gx-item');
+      for (var i = 0; i < allItems.length; i++) {
+        if (!allItems[i].classList.contains('is-active')) {
+          allItems[i].style.transition = 'opacity 0.6s ease';
+          allItems[i].style.opacity = '0';
+          allItems[i].style.pointerEvents = 'none';
+        }
+      }
+      setTimeout(function() {
+        var id = el.getAttribute('data-id') || el.dataset.id;
+        showSection(id);
+        var panel = document.querySelector('.panel');
+        if (panel) panel.classList.add('is-open');
+      }, 300);
+    }
+
+    function zoomOut() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      var field = document.querySelector('.gx-field');
+      if (!field) return;
+      document.body.classList.add('is-unzooming');
+      var panel = document.querySelector('.panel');
+      if (panel) panel.classList.remove('is-open');
+      window.setTimeout(function() {
+        hidePanel();
+      }, 180);
+      window.requestAnimationFrame(function() {
+        field.style.transform = '';
+        field.style.filter = '';
+      });
+      window.setTimeout(function() {
+        document.body.classList.remove('is-zoomed');
+        var allItems = document.querySelectorAll('.gx-item');
+        for (var i = 0; i < allItems.length; i++) {
+          allItems[i].classList.remove('is-active');
+          allItems[i].style.opacity = '';
+          allItems[i].style.pointerEvents = '';
+        }
+        document.body.classList.remove('is-unzooming');
+        isTransitioning = false;
+      }, 1420);
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('.pc-section').forEach(s => {
+        s.classList.remove('on');
+      });
+      const activeSection = document.querySelector(`.pc-section[data-id="${id}"]`);
+      if (activeSection) activeSection.classList.add('on');
+      const panelCard = document.querySelector('.panel-card');
+      if (panelCard) {
+        panelCard.scrollTop = 0;
+        panelCard.dataset.active = id;
+      }
+      const g = document.querySelector(`.galaxy[data-id="${id}"]`);
+      const label = g.querySelector('.gx-label').textContent.trim();
+      // emphasize last word italic
+      const words = label.split(' ');
+      const last = words.pop();
+      document.getElementById('panel-title').innerHTML = `${words.join(' ')} <em>${last}</em>.`;
+      // tint the panel kicker dot to match galaxy hue
+      const hue = g.dataset.hue || '#e8a87c';
+      const dot = document.getElementById('pk-dot');
+      dot.style.background = hue;
+      dot.style.boxShadow = `0 0 12px ${hue}`;
+    }
+
+    // back nav
+    function goBack() {
+      if (window.opener && !window.opener.closed) { window.close(); return; }
+      window.sessionStorage.setItem('returnToUniverse', '1');
+      window.location.href = 'solar-system.html';
+    }
+    window.goBack = goBack;
+    window.zoomOut = zoomOut;
+    window.cbFlipNext = cbFlipNext;
+    window.cbFlipPrev = cbFlipPrev;
+    window.cbGoTo = cbGoTo;
+
+    // keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (document.body.classList.contains('is-zoomed')) zoomOut();
+        else goBack();
+      }
+    });
+
+    // recompute on resize if currently zoomed
+    window.addEventListener('resize', () => {
+      resizeGalaxies();
+      if (!document.body.classList.contains('is-zoomed')) return;
+      const g = document.querySelector('.galaxy.is-active');
+      if (!g) return;
+      const { cx: galaxyCx, cy: galaxyCy, size } = getGalaxyCenterAndSize(g);
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const scale = (Math.max(vw, vh) * 1.6) / size;
+      const tx = vw / 2 - galaxyCx * scale;
+      const ty = vh / 2 - galaxyCy * scale;
+      field.style.transition = 'none';
+      field.style.transformOrigin = '0 0';
+      field.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      requestAnimationFrame(() => { field.style.transition = ''; });
+    });
+  </script>
+</body>
+</html>
