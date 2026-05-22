@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/Anvitas%20Universe.html"
+    },
+    {
+      "source": "/solar-system",
+      "destination": "/solar-system.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/projects",
+      "destination": "/projects.html"
+    },
+    {
+      "source": "/skills",
+      "destination": "/skills.html"
+    },
+    {
+      "source": "/journey",
+      "destination": "/journey.html"
+    }
+  ]
+}
