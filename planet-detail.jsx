@@ -61,7 +61,7 @@ function ProjectsConstellation() {
                 )}
                 <text x={x + r + 8} y={y + 4}
                   fill={isHover ? '#efe6d8' : '#b9a99a'}
-                  fontFamily="Instrument Serif, serif"
+                  fontFamily="'Cormorant Garamond', serif"
                   fontSize="13"
                   style={{ pointerEvents: 'none', transition: 'fill 0.2s' }}>
                   {p.title}
@@ -586,22 +586,22 @@ function WhoIAmDetail() {
     {
       id: 'left-long',
       cord: 'long',
-      text: `I started in engineering. Wrote code, shipped features, spent three years deep in infrastructure and security tooling. It was solid work. But the part I kept gravitating toward wasn't the building — it was the conversation before the building. Why this feature? Who asked for it? Are we solving the real problem or just the one that made it to the ticket?`,
+      text: `I started in engineering. Wrote code, shipped features, spent three years deep in infrastructure and security tooling. It was solid work. But the part I kept gravitating toward wasn't the building, it was the conversation before the building. Why this feature? Who asked for it? Are we solving the real problem or just the one that made it to the ticket?`,
     },
     {
       id: 'left-short',
       cord: 'short',
-      text: `I never really stopped asking those questions. Eventually I realized that's most of the job in product management — and in chief of staff roles. The title's different, the instinct is the same. Stay close to the decisions. Make sure they're actually informed. Follow through on what happens after.`,
+      text: `I never really stopped asking those questions. Eventually I realized that's most of the job in product management and in chief of staff roles. The title's different, the instinct is the same. Stay close to the decisions. Make sure they're actually informed. Follow through on what happens after.`,
     },
     {
       id: 'right-short',
       cord: 'short',
-      text: `What I've noticed about myself is that I see systems before I see tasks. Someone says a tool has low adoption and I'm already thinking about whether it's a trust issue, a discovery issue, or a problem that was scoped wrong six months ago. It's not some superpower — it's just where my attention naturally goes.`,
+      text: `What I've noticed about myself is that I see systems before I see tasks. Someone says a tool has low adoption and I'm already thinking about whether it's a trust issue, a discovery issue, or a problem that was scoped wrong six months ago. It's not some superpower it's just where my attention naturally goes.`,
     },
     {
       id: 'right-long',
       cord: 'long',
-      text: `I'm not someone who needs a clean brief to start. Honestly, I prefer the opposite — the half-formed thing that three people describe differently. Figuring out what it actually is, that's the part I find interesting. I have a CS background, real engineering experience, and enough technical context to know what's genuinely hard versus what's just been deprioritized. I'm not trying to be the most experienced person in any room. I just want to be in the right room.`,
+      text: `I'm not someone who needs a clean brief to start. Honestly, I prefer the opposite the half-formed thing that three people describe differently. Figuring out what it actually is, that's the part I find interesting. I have a CS background, real engineering experience, and enough technical context to know what's genuinely hard versus what's just been deprioritized. I'm not trying to be the most experienced person in any room. I just want to be in the right room.`,
     },
   ];
 
