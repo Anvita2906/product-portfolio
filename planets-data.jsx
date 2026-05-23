@@ -314,7 +314,7 @@ const SKILL_ORBS = [
     orbTop: '25%',
     orbSize: 200,
     color: 'green',
-    cert: '✓ CKA · CKAD · Terraform · AWS',
+    cert: 'Certified in (CKA · CKAD · Terraform · AWS)',
     skills: [
       { name: 'Python', left: '5%', top: '5%' },
       { name: 'SQL', left: '18%', top: '3%' },

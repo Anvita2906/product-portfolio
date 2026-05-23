@@ -15,6 +15,11 @@
   --silver:    #cfc2ad;
   --line:      rgba(239, 230, 216, 0.10);
   --line-strong: rgba(239, 230, 216, 0.22);
+  --font-display: 'Cormorant Garamond', 'Instrument Serif', serif;
+  --font-display-accent: 'Cormorant Garamond', 'Instrument Serif', serif;
+  --font-body: 'Inter', 'Manrope', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
+  --font-project-title: 'DM Serif Display', 'Cormorant Garamond', 'Instrument Serif', serif;
 }
 
 * { box-sizing: border-box; }
@@ -22,8 +27,8 @@
 html, body, #root {
   margin: 0; padding: 0; height: 100%; width: 100%;
   background: var(--bg); color: var(--ink);
-  font-family: 'Manrope', system-ui, sans-serif;
-  font-weight: 350;
+  font-family: var(--font-body);
+  font-weight: 400;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -266,7 +271,7 @@ html, body, #root {
   transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: 14px;
   white-space: nowrap;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px; letter-spacing: 0.36em;
   text-transform: uppercase;
   color: rgba(244,192,137,0.85);
@@ -280,7 +285,7 @@ html, body, #root {
   z-index: 10;
   background: none; border: none;
   color: var(--ink-faint, #6e5e58);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
   cursor: pointer; opacity: 0.7;
   transition: color 0.3s ease, opacity 0.3s ease;
@@ -399,7 +404,7 @@ html, body, #root {
   min-width: 180px;
 }
 .planet-tag .pt-role {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -408,7 +413,7 @@ html, body, #root {
 }
 .planet-tag .pt-teaser {
   max-width: 220px;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-display-accent);
   font-size: 13px;
   font-style: italic;
   line-height: 1.2;
@@ -454,27 +459,28 @@ html, body, #root {
   white-space: nowrap;
 }
 .brand-mark {
-  font-family: 'Instrument Serif', serif; font-size: 22px;
+  font-family: var(--font-display); font-size: 22px;
+  font-weight: 600;
   letter-spacing: 0.02em; color: var(--ink);
 }
 .brand-mark em { color: var(--orange); font-style: italic; }
 .brand-sub {
-  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  font-family: var(--font-mono); font-size: 10px;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint);
 }
 .hud-bl {
   position: absolute; bottom: 32px; left: 40px;
-  font-family: 'Instrument Serif', serif; font-size: 14px;
+  font-family: var(--font-display); font-size: 14px;
   color: var(--ink-dim); max-width: 280px; line-height: 1.5;
 }
 .hud-bl .focus-name-wrap { display: block; margin-bottom: 10px; }
-.hud-bl .focus-name { font-size: 26px; color: var(--ink); display: block; margin-bottom: 10px; line-height: 1.15; }
+.hud-bl .focus-name { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--ink); display: block; margin-bottom: 10px; line-height: 1.15; }
 .hud-bl em { color: var(--orange); font-style: italic; }
 
 .hud-bc {
   position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
   display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  font-family: var(--font-mono); font-size: 9px;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
 }
 .hud-bc .key { padding: 5px 8px; }
@@ -494,7 +500,7 @@ html, body, #root {
   display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
 }
 .zoom-readout {
-  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  font-family: var(--font-mono); font-size: 10px;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint);
 }
 .zoom-bar { width: 120px; height: 1px; background: var(--line); position: relative; }
@@ -506,7 +512,7 @@ html, body, #root {
 }
 .selector-pip {
   display: flex; align-items: center; gap: 10px; cursor: pointer;
-  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  font-family: var(--font-mono); font-size: 9px;
   letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint);
   transition: color 0.3s ease;
 }
@@ -1136,8 +1142,8 @@ html, body, #root {
   --who-dim: rgba(239, 230, 216, 0.62);
   --who-faint: rgba(239, 230, 216, 0.34);
   --who-panel: rgba(21, 16, 13, 0.94);
-  --who-font-body: 'Outfit', 'Manrope', system-ui, sans-serif;
-  --who-font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --who-font-body: 'Inter', 'Outfit', 'Manrope', system-ui, sans-serif;
+  --who-font-mono: 'Space Mono', 'Geist Mono', 'JetBrains Mono', monospace;
   position: relative;
   padding-bottom: 24px;
 }
@@ -1154,10 +1160,11 @@ html, body, #root {
 .who-hero-title {
   margin: 0;
   text-align: center;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-display);
   font-size: clamp(28px, 4.2vw, 50px);
   line-height: 1.04;
   color: var(--who-ink);
+  font-weight: 600;
   animation: whoTitleIn 0.7s ease 0.12s both;
   display: flex;
   flex-direction: column;
@@ -1407,7 +1414,7 @@ html, body, #root {
   margin-bottom: 10px;
 }
 .who-education-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-display);
   font-size: 15px;
   color: var(--who-ink);
   line-height: 1.1;
@@ -1433,7 +1440,7 @@ html, body, #root {
 }
 .who-center-name {
   margin-top: 18px;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-display);
   font-size: 24px;
   color: var(--who-ink);
 }
@@ -1451,7 +1458,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-display-accent);
   font-style: italic;
   font-size: 13px;
   color: var(--who-faint);

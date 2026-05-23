@@ -317,7 +317,7 @@ function SkillsArsenal() {
           </React.Fragment>
         ))}
 
-        {openOrbs.tech ? <div className="cert-text">✓ CKA · CKAD · Terraform · AWS</div> : null}
+        {openOrbs.tech ? <div className="cert-text">Certified in (CKA · CKAD · Terraform · AWS)</div> : null}
       </div>
     </div>
   );

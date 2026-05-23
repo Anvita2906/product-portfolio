@@ -6,7 +6,7 @@
   <title>Atelier — Anvita's Universe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
     :root { --proj-bg: #120c0f; }
@@ -21,7 +21,7 @@
     html, body {
       background: var(--proj-bg);
       overflow-x: hidden !important;
-      font-family: 'Manrope', sans-serif;
+      font-family: 'Inter', 'Manrope', sans-serif;
     }
 
     #star-canvas {
@@ -54,11 +54,11 @@
     .px-back {
       display: inline-flex; align-items: center; gap: 10px;
       background: none; border: none; color: var(--ink-dim);
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 11px;
       letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer;
     }
     .px-back:hover { color: var(--orange); }
-    .px-brand { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--ink); letter-spacing: 0.02em; justify-self: center; }
+    .px-brand { font-family: 'Cormorant Garamond', 'Instrument Serif', serif; font-size: 18px; font-weight: 600; color: var(--ink); letter-spacing: 0.02em; justify-self: center; }
     .px-brand em { color: var(--orange); font-style: italic; }
 
     /* ── Hero ── */
@@ -94,14 +94,14 @@
       text-align: center;
     }
     .px-title {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
+      font-family: 'Cormorant Garamond', 'Instrument Serif', serif; font-weight: 600;
       font-size: clamp(40px, 5.5vw, 72px); line-height: 1.05; letter-spacing: -0.01em;
       color: var(--ink); margin: 0 0 16px; max-width: none;
       white-space: nowrap;
     }
     .px-title em { color: var(--orange); font-style: italic; }
     .px-lede {
-      font-family: 'Instrument Serif', serif; font-style: italic;
+      font-family: 'Cormorant Garamond', 'Instrument Serif', serif; font-style: italic;
       font-size: 18px; color: var(--ink-dim); max-width: none;
       white-space: nowrap;
     }
@@ -112,7 +112,7 @@
     .px-filter {
       padding: 8px 16px; border: 1px solid var(--line);
       background: transparent; color: var(--ink-dim);
-      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 10px;
       letter-spacing: 0.18em; text-transform: uppercase;
       border-radius: 999px; cursor: pointer; transition: all 0.25s ease;
     }
@@ -203,7 +203,7 @@
       transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
     }
     .cc-front-role {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace;
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.28em;
@@ -215,12 +215,12 @@
       width: 100%;
     }
     .cc-name-front {
-      font-family: 'Instrument Serif', serif; font-size: 20px; font-style: italic;
+      font-family: 'Cormorant Garamond', 'Instrument Serif', serif; font-size: 20px; font-style: italic;
       color: rgba(239,230,216,0.92); line-height: 1.2;
     }
     .cc-flip-hint {
       position: absolute; bottom: 75px; right: 14px;
-      font-family: 'JetBrains Mono', monospace; font-size: 8px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 8px;
       letter-spacing: 0.2em; text-transform: uppercase;
       color: rgba(239,230,216,0.18); pointer-events: none;
       transition: color 0.35s ease, transform 0.35s ease, opacity 0.35s ease;
@@ -228,7 +228,7 @@
 
     /* ── Kind badge ── */
     .cc-kind {
-      font-family: 'JetBrains Mono', monospace; font-size: 8px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 8px;
       letter-spacing: 0.2em; text-transform: uppercase;
       padding: 3px 8px; border-radius: 2px; width: fit-content;
     }
@@ -248,24 +248,24 @@
     .cc-back::-webkit-scrollbar { display: none; }
     .cc-back-head { display: flex; align-items: center; justify-content: space-between; }
     .cc-back-year {
-      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 9px;
       letter-spacing: 0.2em; color: var(--ink-faint); text-transform: uppercase;
     }
     .cc-back-title {
-      font-family: 'Instrument Serif', serif; font-size: 28px; line-height: 1.08;
+      font-family: 'DM Serif Display', 'Cormorant Garamond', 'Instrument Serif', serif; font-size: 28px; line-height: 1.08;
       color: #fff6eb; margin: 0;
       text-align: center;
       text-shadow: 0 0 22px rgba(239,230,216,0.12), 0 0 36px rgba(232,168,124,0.1);
     }
     .cc-back-blurb {
-      font-family: 'Instrument Serif', serif; font-size: 14px; font-style: italic;
+      font-family: 'Inter', 'Manrope', sans-serif; font-size: 14px; font-style: normal;
       line-height: 1.6; color: var(--ink-dim); margin: 0;
       text-align: center;
       display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
     }
     .cc-role {
       margin: 0;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 700;
       color: var(--orange);
@@ -280,7 +280,7 @@
     .cc-btn {
       background: transparent; border: 1px solid var(--line-strong); border-radius: 999px;
       padding: 9px 18px; color: var(--ink); cursor: pointer;
-      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 9px;
       letter-spacing: 0.2em; text-transform: uppercase;
       transition: all 0.25s ease; width: 100%; text-align: center;
     }
@@ -296,20 +296,20 @@
     }
     .cc-related { padding-top: 9px; border-top: 1px solid var(--line); margin-top: auto; }
     .cc-related-lbl {
-      font-family: 'JetBrains Mono', monospace; font-size: 8px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 8px;
       letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
       display: block; margin-bottom: 7px;
     }
     .cc-related-chips { display: flex; gap: 5px; flex-wrap: wrap; }
     .cc-related-chip {
-      font-family: 'JetBrains Mono', monospace; font-size: 8px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 8px;
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--ink-faint); padding: 3px 9px;
       border: 1px solid var(--line); border-radius: 999px;
       background: rgba(239,230,216,0.02);
     }
     .cc-flip-back-hint {
-      font-family: 'JetBrains Mono', monospace; font-size: 8px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 8px;
       letter-spacing: 0.18em; text-transform: uppercase;
       color: rgba(239,230,216,0.15); text-align: center; padding-top: 8px;
     }
@@ -441,7 +441,7 @@
       border-radius: 999px;
       background: rgba(232,168,124,0.06);
       color: var(--gold);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace;
       font-size: 8px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -452,11 +452,11 @@
     .px-footer {
       padding: 36px 44px 56px; border-top: 1px solid var(--line);
       display: flex; justify-content: space-between; align-items: center; gap: 16px;
-      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      font-family: 'Space Mono', 'JetBrains Mono', monospace; font-size: 10px;
       letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint);
     }
     .px-footer .end-line {
-      font-family: 'Instrument Serif', serif; font-style: italic;
+      font-family: 'Cormorant Garamond', 'Instrument Serif', serif; font-style: italic;
       text-transform: none; letter-spacing: 0.005em; font-size: 15px; color: var(--ink-dim);
     }
   </style>
@@ -988,8 +988,7 @@
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.78, delay: 0.28, ease: [0.2, 0.7, 0.2, 1] }}
             >
-              <h1 className="px-title">Constellations of <em>Conviction</em>.</h1>
-              <p className="px-lede">Strategies, prototypes, and case studies — each one a decision I shaped.</p>
+              <h1 className="px-title">Constellations of Conviction</h1>
             </motion.div>
           </motion.header>
 
